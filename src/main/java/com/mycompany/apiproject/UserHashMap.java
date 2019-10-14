@@ -20,13 +20,12 @@ public class UserHashMap implements UserService {
 
     @Override
     public void addUser(User user) {
-
+        users.put(user.getId(), user);
     }
 
     @Override
     public Collection<User> getUsers() {
         return users.values();
-
     }
 
     @Override
