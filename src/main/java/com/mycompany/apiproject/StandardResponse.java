@@ -29,7 +29,7 @@ public class StandardResponse {
         this.status = status;
         this.data = data;
     }
-
+    
     public StatusResponse getStatus() {
         return status;
     }

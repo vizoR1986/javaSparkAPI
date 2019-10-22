@@ -6,6 +6,11 @@
 package com.mycompany.apiproject;
 
 import com.google.gson.Gson;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import static spark.Spark.*;
 
 /**
@@ -22,28 +27,37 @@ public class Main {
     public void setSparkAPI() {
         final UserService userService = new UserHashMap();
 
-        post("/users", (request, response) -> {
+        post("/hello/users", (request, response) -> {
             response.type("application/json");
 
             User user = new Gson().fromJson(request.body(), User.class);
+            
+            if (!checkForUsername(user.getFirstName(), user.getLastName())) {
+                return new Gson().toJson(new StandardResponse(StatusResponse.ERROR, "The specified name for the user contains special characters , please use alphabetical letters only..."));
+            }
+            /*if (!checkForGivenDate(user.getBirthDay())) {
+                return new Gson().toJson(new StandardResponse(StatusResponse.ERROR, "The specified date must be before today , please add the birth date accordingly..."));
+            }*/
+            
             userService.addUser(user);
+            return new Gson().toJson(new StandardResponse(
+                    StatusResponse.SUCCESS));
 
-            return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS));
         });
 
-        get("/users", (request, response) -> {
+        get("/hello/users", (request, response) -> {
             response.type("application/json");
 
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(userService.getUsers())));
         });
 
-        get("/users/:id", (request, response) -> {
+        get("/hello/users/:id", (request, response) -> {
             response.type("application/json");
 
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(userService.getUser(request.params(":id")))));
         });
 
-        put("/users/:id", (request, response) -> {
+        put("/hello/users/:id", (request, response) -> {
             response.type("application/json");
 
             User toEdit = new Gson().fromJson(request.body(), User.class);
@@ -56,14 +70,14 @@ public class Main {
             }
         });
 
-        delete("/users/:id", (request, response) -> {
+        delete("/hello/users/:id", (request, response) -> {
             response.type("application/json");
 
             userService.deleteUser(request.params(":id"));
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, "user deleted"));
         });
 
-        options("/users/:id", (request, response) -> {
+        options("/hello/users/:id", (request, response) -> {
             response.type("application/json");
 
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, (userService.userExist(request.params(":id"))) ? "User exists" : "User does not exists"));
@@ -73,4 +87,27 @@ public class Main {
             return "A ló néz a csikó lát, felszívnék egy csík kólát";
         });
     }
+
+    boolean checkForGivenDate(String userDate) {
+        Date checkDate = null;
+        Date currentDate = new Date();
+        try {
+            SimpleDateFormat simpledf = new SimpleDateFormat("yyyy-MM-dd");
+            checkDate = simpledf.parse(userDate);
+        } catch (ParseException ex) {
+            System.out.println(ex.getStackTrace());
+        }
+
+        boolean check = (checkDate.after(currentDate)) ? true : false;
+        return check;
+    }
+
+    boolean checkForUsername(String firstName, String lastName) {
+        String regexpForUser = "^[a-z]+$";
+        Pattern p = Pattern.compile(regexpForUser, Pattern.CASE_INSENSITIVE);
+        Matcher mLast = p.matcher(lastName+firstName);
+        boolean isNameProper = (mLast.matches()) ? true : false;
+        return isNameProper;
+    }
+
 }

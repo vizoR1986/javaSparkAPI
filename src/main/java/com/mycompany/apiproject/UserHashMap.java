@@ -38,7 +38,7 @@ public class UserHashMap implements UserService {
 
     @Override
     public User editUser(User user) throws UserException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); //ToDo for editing users
     }
 
     @Override
