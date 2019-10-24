@@ -7,7 +7,6 @@ package com.mycompany.apiproject;
 
 import java.util.Collection;
 import java.util.HashMap;
-import org.omg.CORBA.UserException;
 
 /**
  *
