@@ -6,7 +6,6 @@
 package com.mycompany.apiproject;
 
 import java.util.Collection;
-import org.omg.CORBA.UserException;
 
 /**
  *
