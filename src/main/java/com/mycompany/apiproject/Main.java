@@ -47,13 +47,17 @@ public class Main {
 
         get("/hello/users", (request, response) -> {
             response.type("application/json");
-
+            if (userService.getUsers().isEmpty()) {
+                halt(401, "There is no user stored in the DB");
+            }
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(userService.getUsers())));
         });
 
         get("/hello/users/:id", (request, response) -> {
             response.type("application/json");
-
+            if(!userService.getUsers().contains(request.params(":id"))) {
+                halt(401,"There was no user found in the database that has the following ID :" + request.params(":id"));
+            }
             return new Gson().toJson(new StandardResponse(StatusResponse.SUCCESS, new Gson().toJsonTree(userService.getUser(request.params(":id")))));
         });
 
@@ -97,7 +101,6 @@ public class Main {
         } catch (ParseException ex) {
             System.out.println(ex.getStackTrace());
         }
-
         boolean check = (checkDate.after(currentDate)) ? true : false;
         return check;
     }
@@ -109,5 +112,4 @@ public class Main {
         boolean isNameProper = (mLast.matches()) ? true : false;
         return isNameProper;
     }
-
 }
